@@ -72,6 +72,21 @@ else
     print_status "Node.js already installed: $(node --version)"
 fi
 
+# Install MySQL (MariaDB)
+if ! command -v mysql &> /dev/null; then
+    print_status "Installing MySQL (MariaDB)..."
+    sudo dnf install -y mariadb105-server mariadb105
+    sudo systemctl enable mariadb
+    sudo systemctl start mariadb
+    
+    # Secure MySQL installation (set root password)
+    print_warning "MySQL (MariaDB) installed. You should secure it:"
+    print_warning "Run: sudo mysql_secure_installation"
+    print_warning "Or set root password manually: sudo mysqladmin -u root password 'yourpassword'"
+else
+    print_status "MySQL (MariaDB) already installed"
+fi
+
 # Install Apache (httpd)
 if ! command -v httpd &> /dev/null; then
     print_status "Installing Apache (httpd)..."
@@ -121,7 +136,12 @@ APP_KEY=
 APP_DEBUG=false
 APP_URL=http://localhost
 
-DB_CONNECTION=sqlite
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=washnet
+DB_USERNAME=root
+DB_PASSWORD=
 
 LOG_CHANNEL=stack
 LOG_LEVEL=debug
