@@ -22,7 +22,14 @@ function CustomerHome() {
   const fetchWeather = async (showLoading = false) => {
     if (showLoading) setWeatherLoading(true);
     try {
-      const apiKey = process.env.REACT_APP_WEATHER_API_KEY || '67c3afe347b2430fa8022239250311';
+      const apiKey = process.env.REACT_APP_WEATHER_API_KEY?.trim();
+
+      // If no valid key, immediately use demo data to avoid CORS/401 white screens
+      if (!apiKey || apiKey.length < 20) {
+        setDemoWeather();
+        return;
+      }
+
       const response = await axios.get('https://api.openweathermap.org/data/2.5/forecast', {
         params: {
           q: 'Manila,PH',
@@ -31,25 +38,15 @@ function CustomerHome() {
           cnt: 40 
         }
       });
-      
-      console.log('Weather API response:', response.data);
-      
+
       if (response.data && response.data.list && response.data.list.length > 0) {
         setWeather(response.data);
         findBestLaundryDay(response.data.list);
-        console.log('Weather data loaded successfully from API');
       } else {
-        console.error('Invalid API response:', response.data);
         setDemoWeather();
       }
     } catch (error) {
-      console.error('Weather API error:', error.response?.data || error.message);
-      console.error('Full error:', error);
-      if (error.response?.status === 401) {
-        console.error('API Key might be invalid. Check your OpenWeatherMap API key.');
-      } else if (error.response?.status === 429) {
-        console.error('API rate limit exceeded. Please try again later.');
-      }
+      // Always fall back silently
       setDemoWeather();
     } finally {
       if (showLoading) setWeatherLoading(false);
