@@ -39,11 +39,11 @@ function Login() {
         }
         if (userData && userData.role === 'admin') {
           navigate('/admin');
-        } else if (userData) {
+        } else if (userData && userData.role === 'employee') {
           navigate('/employee');
         } else {
-          // Fallback: go home if we couldn't parse user
-          navigate('/');
+          // If user data missing or role unknown, treat as error and stay
+          setError('Login failed: invalid user data');
         }
       }, 100);
     } else {

@@ -58,7 +58,13 @@ export function AuthProvider({ children }) {
         password,
       });
       
-      const { user: userData, token } = response.data;
+      const { user: userData, token } = response.data || {};
+
+      // Validate response shape strictly
+      if (!token || !userData || !userData.role) {
+        return { success: false, message: 'Invalid login response from server' };
+      }
+
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
