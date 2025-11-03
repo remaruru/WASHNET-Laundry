@@ -14,10 +14,19 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    if (token && userData) {
+    const rawUser = localStorage.getItem('user');
+
+    let parsedUser = null;
+    try {
+      parsedUser = rawUser ? JSON.parse(rawUser) : null;
+    } catch (_) {
+      // Corrupt value in localStorage; clear it to avoid crashes
+      localStorage.removeItem('user');
+    }
+
+    if (token && parsedUser) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(JSON.parse(userData));
+      setUser(parsedUser);
       setLoading(false);
     } else if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
