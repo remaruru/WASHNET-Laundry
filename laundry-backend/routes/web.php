@@ -12,3 +12,8 @@ Route::get('/', function () {
 Route::get('/api/orders/search', [OrderController::class, 'searchByCustomerName']);
 Route::post('/api/login', [AuthController::class, 'login']);
 Route::post('/api/register', [AuthController::class, 'register']);
+
+// Extra mirrors without the /api prefix in case the web server strips it
+Route::get('/orders/search', [OrderController::class, 'searchByCustomerName']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
