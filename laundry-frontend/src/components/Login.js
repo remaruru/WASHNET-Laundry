@@ -31,12 +31,19 @@ function Login() {
       // The login function in AuthContext already sets the user in state
       // We need to wait for the user state to be updated, then redirect
       setTimeout(() => {
-        // Get user from the response data that was returned from login
-        const userData = result.user || JSON.parse(localStorage.getItem('user') || '{}');
-        if (userData.role === 'admin') {
+        // Safely read user from localStorage if not returned
+        let userData = result.user;
+        if (!userData) {
+          const raw = localStorage.getItem('user');
+          try { userData = raw ? JSON.parse(raw) : null; } catch { userData = null; }
+        }
+        if (userData && userData.role === 'admin') {
           navigate('/admin');
-        } else {
+        } else if (userData) {
           navigate('/employee');
+        } else {
+          // Fallback: go home if we couldn't parse user
+          navigate('/');
         }
       }, 100);
     } else {
