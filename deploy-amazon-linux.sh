@@ -56,6 +56,14 @@ else
     print_status "Composer already installed"
 fi
 
+# Install Git
+if ! command -v git &> /dev/null; then
+    print_status "Installing Git..."
+    sudo dnf install -y git
+else
+    print_status "Git already installed: $(git --version)"
+fi
+
 # Install Node.js
 if ! command -v node &> /dev/null; then
     print_status "Installing Node.js..."
