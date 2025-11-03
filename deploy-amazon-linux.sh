@@ -41,10 +41,10 @@ fi
 print_status "Updating system packages..."
 sudo dnf update -y
 
-# Install PHP 8.2
-print_status "Installing PHP 8.2..."
-sudo dnf install -y php8.2 php8.2-cli php8.2-common php8.2-mysqlnd php8.2-zip \
-    php8.2-gd php8.2-mbstring php8.2-curl php8.2-xml php8.2-bcmath php8.2-sqlite
+# Install PHP and extensions (Amazon Linux 2023 package names)
+print_status "Installing PHP and extensions..."
+sudo dnf install -y php php-cli php-common php-mysqlnd php-zip \
+    php-gd php-mbstring php-curl php-xml php-bcmath php-pdo sqlite php-sqlite3
 
 # Install Composer
 if ! command -v composer &> /dev/null; then
@@ -64,11 +64,10 @@ else
     print_status "Git already installed: $(git --version)"
 fi
 
-# Install Node.js
+# Install Node.js (Amazon Linux 2023 uses nodejs20)
 if ! command -v node &> /dev/null; then
-    print_status "Installing Node.js..."
-    curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
-    sudo dnf install -y nodejs
+    print_status "Installing Node.js 20..."
+    sudo dnf install -y nodejs20 npm
 else
     print_status "Node.js already installed: $(node --version)"
 fi
