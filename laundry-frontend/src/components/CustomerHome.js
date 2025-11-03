@@ -157,8 +157,8 @@ function CustomerHome() {
       const response = await axios.get(apiConfig.endpoints.orderSearch, {
         params: { customer_name: trimmedName },
         headers: {
-          'Accept': 'application/json',
-        }
+          Accept: 'application/json',
+        },
       });
       
       console.log('Search response:', response.data);
