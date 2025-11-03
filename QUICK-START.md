@@ -27,22 +27,35 @@
 ### Step 2: Setup EC2 Instance (10 minutes)
 
 1. **Connect to EC2**:
+   
+   For **Ubuntu** instances:
    ```bash
    ssh -i your-key.pem ubuntu@your-ec2-ip
+   ```
+   
+   For **Amazon Linux 2023** instances:
+   ```bash
+   ssh -i your-key.pem ec2-user@your-ec2-ip
    ```
 
 2. **Run the Automated Setup**:
    ```bash
+   # Create /var/www directory if it doesn't exist
+   sudo mkdir -p /var/www
+   sudo chown $USER:$USER /var/www
+   
    # Clone your repository
    cd /var/www
-   sudo git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git laundry
+   git clone https://github.com/remaruru/WASHNET-Laundry.git laundry
    cd laundry
    
-   # Make deploy script executable
+   # For Ubuntu: Make deploy script executable and run
    chmod +x deploy.sh
-   
-   # Run deployment (this installs everything automatically)
    ./deploy.sh
+   
+   # For Amazon Linux 2023: Use the Amazon Linux script
+   chmod +x deploy-amazon-linux.sh
+   ./deploy-amazon-linux.sh
    ```
 
 3. **Configure Environment Files**:
@@ -65,10 +78,18 @@
    ```
 
 5. **Configure Apache** (follow DEPLOYMENT.md Step 6)
+   - Note: On Ubuntu use `apache2`, on Amazon Linux use `httpd`
 
 6. **Restart Apache**:
+   
+   For **Ubuntu**:
    ```bash
    sudo systemctl restart apache2
+   ```
+   
+   For **Amazon Linux**:
+   ```bash
+   sudo systemctl restart httpd
    ```
 
 ### Step 3: Create Admin User
@@ -114,16 +135,21 @@ php artisan migrate --force
 php artisan config:cache
 cd ../laundry-frontend
 npm run build
-sudo systemctl restart apache2
+# Ubuntu: sudo systemctl restart apache2
+# Amazon Linux: sudo systemctl restart httpd
 ```
 
 ---
 
 ## Troubleshooting
 
-- **Can't access the site?** Check Apache: `sudo systemctl status apache2`
+- **Can't access the site?** Check Apache: 
+  - Ubuntu: `sudo systemctl status apache2`
+  - Amazon Linux: `sudo systemctl status httpd`
 - **API not working?** Check Laravel logs: `tail -f laundry-backend/storage/logs/laravel.log`
 - **Frontend not loading?** Make sure you ran `npm run build`
-- **Permission errors?** Run: `sudo chown -R www-data:www-data /var/www/laundry`
+- **Permission errors?** Run: 
+  - Ubuntu: `sudo chown -R www-data:www-data /var/www/laundry`
+  - Amazon Linux: `sudo chown -R apache:apache /var/www/laundry`
 
 For detailed instructions, see `DEPLOYMENT.md`
