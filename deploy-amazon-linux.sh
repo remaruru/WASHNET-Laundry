@@ -79,12 +79,18 @@ if ! command -v mysql &> /dev/null; then
     sudo systemctl enable mariadb
     sudo systemctl start mariadb
     
-    # Secure MySQL installation (set root password)
-    print_warning "MySQL (MariaDB) installed. You should secure it:"
-    print_warning "Run: sudo mysql_secure_installation"
-    print_warning "Or set root password manually: sudo mysqladmin -u root password 'yourpassword'"
+    # Setup laundry_db database with root (blank password)
+    print_status "Setting up MySQL database: laundry_db..."
+    sudo mysql -u root << EOF
+CREATE DATABASE IF NOT EXISTS laundry_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+FLUSH PRIVILEGES;
+EOF
+    print_status "Database 'laundry_db' created with root user (blank password)"
 else
     print_status "MySQL (MariaDB) already installed"
+    # Still try to create database if it doesn't exist
+    sudo mysql -u root -e "CREATE DATABASE IF NOT EXISTS laundry_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null || true
 fi
 
 # Install Apache (httpd)
@@ -139,7 +145,7 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=washnet
+DB_DATABASE=laundry_db
 DB_USERNAME=root
 DB_PASSWORD=
 

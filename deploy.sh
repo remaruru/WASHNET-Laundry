@@ -68,6 +68,27 @@ else
     print_status "Node.js already installed: $(node --version)"
 fi
 
+# Install MySQL
+if ! command -v mysql &> /dev/null; then
+    print_status "Installing MySQL..."
+    sudo apt install -y mysql-server
+    sudo systemctl enable mysql
+    sudo systemctl start mysql
+    
+    # Setup laundry_db database
+    print_status "Setting up MySQL database: laundry_db..."
+    sudo mysql -u root << EOF
+CREATE DATABASE IF NOT EXISTS laundry_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+FLUSH PRIVILEGES;
+EOF
+    print_status "Database 'laundry_db' created with root user (blank password)"
+else
+    print_status "MySQL already installed"
+    # Still try to create database if it doesn't exist
+    sudo mysql -u root -e "CREATE DATABASE IF NOT EXISTS laundry_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" 2>/dev/null || true
+fi
+
 # Install Apache
 if ! command -v apache2 &> /dev/null; then
     print_status "Installing Apache..."
@@ -117,7 +138,12 @@ APP_KEY=
 APP_DEBUG=false
 APP_URL=http://localhost
 
-DB_CONNECTION=sqlite
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laundry_db
+DB_USERNAME=root
+DB_PASSWORD=
 
 LOG_CHANNEL=stack
 LOG_LEVEL=debug

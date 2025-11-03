@@ -1,6 +1,16 @@
 # Quick Start Guide - Deploy to EC2
 
+## 📖 For Detailed Step-by-Step Instructions
+
+**👉 See `EC2-DEPLOYMENT-STEPS.md` for complete step-by-step guide!**
+
 ## The Easiest Way: Git Repository + EC2
+
+**Important Database Configuration:**
+- Database Name: `laundry_db` (NOT washnet)
+- Username: `root`
+- Password: (blank - no password)
+- Migrations will automatically create all tables
 
 ### Step 1: Push to GitHub (5 minutes)
 
@@ -62,6 +72,11 @@
    ```bash
    # Backend config
    nano laundry-backend/.env
+   # IMPORTANT: Make sure these database settings are correct:
+   # DB_CONNECTION=mysql
+   # DB_DATABASE=laundry_db
+   # DB_USERNAME=root
+   # DB_PASSWORD= (blank)
    # Set: APP_URL=http://your-domain.com (or EC2 IP)
    # Set: APP_DEBUG=false
    
